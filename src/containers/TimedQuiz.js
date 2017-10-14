@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Prompt } from 'react-router-dom';
 import { invokeApig } from '../libs/awsLib';
+import {Button, ButtonToolbar, ToggleButton, ToggleButtonGroup} from 'react-bootstrap'
+// './TimedQuiz.css'
 
 class TimedQuiz extends Component {
     constructor(props) {
@@ -16,6 +18,7 @@ class TimedQuiz extends Component {
         };
         this.selectAnswer = this.selectAnswer.bind(this);
         this.nextStep = this.nextStep.bind(this);
+        this.backStep = this.backStep.bind(this);
         this.newQuestion = this.newQuestion.bind(this);
 
 
@@ -38,7 +41,7 @@ class TimedQuiz extends Component {
             });
             for (var i = 0; i < result.questions.Questions.length; i++) {
                 for (var j = 0; j < result.questions.Questions[i].Answers.length; j++) {
-                    if (result.questions.Questions[i].Answers[j].correct == true) {
+                    if (result.questions.Questions[i].Answers[j].correct) {
                         this.state.correctAnswers[i] = result.questions.Questions[i].Answers[j].answer;
                     }
                 }
@@ -58,12 +61,21 @@ class TimedQuiz extends Component {
             this.newQuestion(steps);
     }        
 }
+
+    backStep() {
+        this.setState({
+                step: this.state.step - 1
+            });
+        var steps = this.state.step - 1;
+        if (steps > -1) {
+            this.newQuestion(steps);
+    }        
+}
     
     newQuestion(stepper) {
         this.setState({
                 questions: this.state.quiz.questions.Questions[stepper],
                 answer: this.state.quiz.questions.Questions[stepper].Answers,
-                correct: this.state.quiz.questions.Questions[stepper].Answers[0].correct
             });
     }
 
@@ -76,7 +88,7 @@ class TimedQuiz extends Component {
     computeScore() {
         var score = 0;
         for (var i = 0; i < this.state.user_answers.length; i++) {
-            if (this.state.user_answers[i] == this.state.correctAnswers[i]) {
+            if (this.state.user_answers[i] === this.state.correctAnswers[i]) {
             score++;
         }
     }
@@ -88,36 +100,65 @@ class TimedQuiz extends Component {
     }
 
     render() {
+       
         const choice = ['A', 'B', 'C', 'D']
         let answerNodes = this.state.answer.map((value,index) => 
-         <div>
-            <input
-                id={"answer-input" + index}
-                type="radio"
-                value={this.state.answer[index].answer}
-                onChange={this.selectAnswer}
-                checked={this.state.user_answers[this.state.step] === this.state.answer[index].answer} />
-            <label htmlFor={"answer-input" + index}>
-                {choice[index] + ". " + this.state.answer[index].answer}
-            </label>
+ //for (i=0; i<this.state.an)
+
+         <div id="me">
+             
+             
+             <ToggleButton vertical block className="me"
+             type="radio" 
+             value={this.state.answer[index].answer} 
+             checked={this.state.user_answers[this.state.step] === this.state.answer[index].answer}
+             onChange={this.selectAnswer}
+             
+>
+                 {" " + choice[index] + ". " + this.state.answer[index].answer}
+             </ToggleButton>
+            
         </div>
+        
     );
  
         return (
+             
             <div className = "App">
-                <h1>{this.state.quiz.quizName}</h1>
+                <h1 id="QuizName">{this.state.quiz.quizName}</h1>
                     {(this.state.step < this.state.quizLength ?
                     <form>
-                        <h4>{(parseInt(this.state.step) + 1) + ": " + this.state.questions.title}?</h4>
-                        {answerNodes} 
-                        <br/>
+                        <Prompt 
+                        when={true}
+                        message="Are you sure you want to Quit? All progress will be lost."/>
 
-                        <button type="button" onClick={this.nextStep}>
+                        <h3 id="QuizTitle">{(parseInt(this.state.step) + 1) + ": " + this.state.questions.title}?</h3>
+                        {answerNodes}
+                        <br/>
+                        <div>
+                        
+
+                        <span id="Prevbtn">    
+                        {this.state.step >= 1 ? 
+                        <Button bsSize="lg" bsStyle="warning" type="button" onClick={this.backStep}>
+                            Previous
+                        </Button>
+                         : 
+                        null}
+                        </span>
+                        <span id="Nextbtn">
+                        <Button bsSize="lg" bsStyle="primary" type="button" onClick={this.nextStep}>
                             Next
-                        </button>
+                        </Button>
+                        </span>
+                        </div>
+
+                        
                     </form> 
+                    
                     : <div>You scored{(this.renderResult())}</div>
                     )}
+                    <h4>{/*new Date().toLocaleTimeString()*/}</h4>
             </div>
         )
     }

@@ -1,0 +1,28 @@
+#QuizName {
+    color: #E8C352;
+    font-family: 'Times New Roman';
+    text-align: center;
+    padding-bottom: 20px;
+    background-color: #000080;
+}
+
+
+#QuizTitle {
+    text-align: center;
+    color: #000080;
+    font-family: 'Times New Roman', Times, serif;
+    padding-bottom: 20px;
+    padding-top: 20px;
+}
+
+#me {
+    padding-bottom: 20px;
+}
+
+#Nextbtn {
+    text-align: right;
+}
+
+#Prevbtn{
+    text-align: left;
+}
